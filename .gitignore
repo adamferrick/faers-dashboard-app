@@ -1,0 +1,3 @@
+.docker-buildstamp
+data/*.zip
+data/*.duckdb
