@@ -1,6 +1,8 @@
 library(shiny)
+library(DT)
 library(tidyverse)
 library(pool)
+library(plotly)
 
 pool <- dbPool(
   drv = duckdb::duckdb(),
@@ -24,4 +26,49 @@ server <- function(input, output) {
       geom_bar()
   })
 
+  output$cases_drug <- renderDT({
+    pool %>%
+      tbl("drug") %>%
+      select(primaryid, drugname) %>%
+      distinct() %>%
+      group_by(drugname) %>%
+      summarise(count = n()) %>%
+      ungroup() %>%
+      arrange(desc(count)) %>%
+      as_tibble()
+  })
+
+  output$cases_reac <- renderDT({
+    pool %>%
+      tbl("reac") %>%
+      select(primaryid, pt) %>%
+      distinct() %>%
+      group_by(pt) %>%
+      summarise(count = n()) %>%
+      ungroup() %>%
+      arrange(desc(count)) %>%
+      as_tibble()
+  })
+
+  output$outc_plot <- renderPlotly({
+    pool %>%
+      tbl("outc") %>%
+      select(primaryid, outc_cod) %>%
+      distinct() %>%
+      group_by(outc_cod) %>%
+      summarise(count = n()) %>%
+      ungroup() %>%
+      as_tibble() %>%
+      mutate(outcome = fct_recode(
+        outc_cod,
+        "Death" = "DE",
+        "Life-Threatening" = "LT",
+        "Hospitalization - Initial or Prolonged" = "HO",
+        "Disability" = "DS",
+        "Congenital Anomaly" = "CA",
+        "Required Intervention to Prevent Permanent Impairment/Damage" = "RI",
+        "Other Serious (Important Medical Event)" = "OT"
+      )) %>%
+      plot_ly(x = ~count, y = ~outcome, type = "bar", orientation = "h")
+  })
 }

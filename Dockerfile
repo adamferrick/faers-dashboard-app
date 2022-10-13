@@ -11,10 +11,12 @@ RUN apt-get update -qq && apt-get install -y --no-install-recommends \
 
 RUN install2.r --error --skipinstalled --ncpus -1 \
     tidyverse \
+    plotly \
     shiny \
     shinydashboard \
     duckdb \
     pool \
+    DT \
     && rm -rf /tmp/downloaded_packages \
     && strip /usr/local/lib/R/site-library/*/libs/*.so
 
