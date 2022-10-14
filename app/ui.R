@@ -54,7 +54,10 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "reporters",
-        fluidRow(h2("Reporters"))
+        fluidRow(h2("Reporters")),
+        fluidRow(
+          box(plotlyOutput("reporters_plot"), width = 10)
+        )
       )
     )
   )

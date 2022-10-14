@@ -102,4 +102,26 @@ server <- function(input, output) {
       ) %>%
       plot_ly(x = ~`Age Group`, y = ~count, color = ~Sex, type = "bar")
   })
+
+  output$reporters_plot <- renderPlotly({
+    pool %>%
+      tbl("demo") %>%
+      select(primaryid, occp_cod) %>%
+      distinct() %>%
+      group_by(occp_cod) %>%
+      summarise(count = n()) %>%
+      ungroup() %>%
+      as_tibble() %>%
+      mutate(
+        Reporter = fct_recode(
+          occp_cod,
+          "Physician" = "MD",
+          "Pharmacist" = "PH",
+          "Other Health Professional" = "HP",
+          "Lawyer" = "LW",
+          "Consumer" = "CN"
+        )
+      ) %>%
+      plot_ly(x = ~count, y = ~Reporter, type = "bar", orientation = "h")
+  })
 }
