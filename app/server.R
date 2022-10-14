@@ -59,16 +59,47 @@ server <- function(input, output) {
       summarise(count = n()) %>%
       ungroup() %>%
       as_tibble() %>%
-      mutate(outcome = fct_recode(
-        outc_cod,
-        "Death" = "DE",
-        "Life-Threatening" = "LT",
-        "Hospitalization - Initial or Prolonged" = "HO",
-        "Disability" = "DS",
-        "Congenital Anomaly" = "CA",
-        "Required Intervention to Prevent Permanent Impairment/Damage" = "RI",
-        "Other Serious (Important Medical Event)" = "OT"
-      )) %>%
+      mutate(
+        outcome = fct_recode(
+          outc_cod,
+          "Death" = "DE",
+          "Life-Threatening" = "LT",
+          "Hospitalization - Initial or Prolonged" = "HO",
+          "Disability" = "DS",
+          "Congenital Anomaly" = "CA",
+          "Required Intervention to Prevent Permanent Impairment/Damage" = "RI",
+          "Other Serious (Important Medical Event)" = "OT"
+        )
+      ) %>%
       plot_ly(x = ~count, y = ~outcome, type = "bar", orientation = "h")
+  })
+
+  output$age_sex_heatmap <- renderPlotly({
+    pool %>%
+      tbl("demo") %>%
+      select(primaryid, sex, age_grp) %>%
+      distinct() %>%
+      group_by(sex, age_grp) %>%
+      summarise(count = n()) %>%
+      ungroup() %>%
+      as_tibble() %>%
+      mutate(
+        `Age Group` = fct_recode(
+          age_grp,
+          "Neonate" = "N",
+          "Infant" = "I",
+          "Child" = "C",
+          "Adolescent" = "T",
+          "Adult" = "A",
+          "Elderly" = "E"
+        ),
+        Sex = fct_recode(
+          sex,
+          "Unknown" = "Unk",
+          "Male" = "M",
+          "Female" = "F"
+        )
+      ) %>%
+      plot_ly(x = ~`Age Group`, y = ~count, color = ~Sex, type = "bar")
   })
 }

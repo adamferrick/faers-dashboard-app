@@ -34,19 +34,22 @@ ui <- dashboardPage(
 
       tabItem(
         tabName = "reactions",
-        fluidRow(h2("Reactions")),
-        fluidRow(
-          box(DTOutput("cases_reac"), width = 10)
-        ),
         fluidRow(h2("Outcomes")),
         fluidRow(
           box(plotlyOutput("outc_plot"), width = 10)
+        ),
+        fluidRow(h2("Reactions")),
+        fluidRow(
+          box(DTOutput("cases_reac"), width = 10)
         )
       ),
 
       tabItem(
         tabName = "demographics",
-        fluidRow(h2("Demographics"))
+        fluidRow(h2("Demographics")),
+        fluidRow(
+          box(plotlyOutput("age_sex_heatmap"), width = 10)
+        )
       ),
 
       tabItem(
